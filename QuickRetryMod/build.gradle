@@ -1,0 +1,55 @@
+plugins {
+    id 'java'
+}
+
+group = 'quickretry'
+version = '1.0.0'
+
+// ゲームとMod依存ライブラリのパスを設定してください
+// Slay the Spireのインストールフォルダ（Steamの場合は下記が一般的）
+// Windows: C:/Program Files (x86)/Steam/steamapps/common/SlayTheSpire
+// Linux:   ~/.steam/steam/steamapps/common/SlayTheSpire
+// Mac:     ~/Library/Application Support/Steam/steamapps/common/SlayTheSpire
+def stsHome = System.getenv('STS_HOME') ?: '/path/to/SlayTheSpire'
+def mtsHome = System.getenv('MTS_HOME') ?: "${stsHome}/mods"
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    // ゲーム本体JAR（ビルドには必要だが配布には含めない）
+    compileOnly files("${stsHome}/desktop-1.0.jar")
+
+    // ModTheSpire（Modローダー）
+    compileOnly files("${stsHome}/mods/ModTheSpire.jar")
+
+    // BaseMod（共通ModAPI）
+    compileOnly files("${stsHome}/mods/BaseMod.jar")
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
+}
+
+// Modのリソースファイル（ModTheSpire.json）をJAR内に含める
+jar {
+    archiveBaseName = 'QuickRetryMod'
+    from sourceSets.main.resources
+    manifest {
+        attributes(
+            'Implementation-Title': 'QuickRetryMod',
+            'Implementation-Version': version
+        )
+    }
+}
+
+// ビルド後にModフォルダへ自動コピー（任意）
+task deployMod(type: Copy, dependsOn: jar) {
+    from jar.archiveFile
+    into "${stsHome}/mods"
+    doLast {
+        println "Deployed to ${stsHome}/mods"
+    }
+}

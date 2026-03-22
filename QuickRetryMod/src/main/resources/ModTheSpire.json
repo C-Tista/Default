@@ -1,0 +1,10 @@
+{
+  "modid": "quickretrymod",
+  "name": "Quick Retry Mod",
+  "author_list": ["C-Tista"],
+  "description": "Press F5 to save and return to title. Load your save to retry the floor from the beginning.",
+  "version": "1.0.0",
+  "sts_version": "12-22-2020",
+  "mts_version": "3.30.0",
+  "dependencies": ["basemod"]
+}
