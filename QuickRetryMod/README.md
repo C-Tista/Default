@@ -1,63 +1,72 @@
-# QuickRetryMod - ワンボタンリトライMod
+# QuickRetryMod - ワンボタンリトライMod (STS2)
 
 フロアの途中で **F5** を押すと、保存してタイトルに戻ります。
 「続ける」を選択するとそのフロアの最初から再プレイできます。
 
 ## 必要なもの
 
-- Slay the Spire（Steam版）
-- [ModTheSpire](https://github.com/kiooeht/ModTheSpire/releases) 3.30.0以上
-- [BaseMod](https://github.com/daviscook477/BaseMod/releases)
-- Java 8 (JDK)
+- Slay the Spire 2（Steam版）
+- [BepInEx 5.x](https://github.com/BepInEx/BepInEx/releases) (Unity Mono版)
+- .NET SDK または Visual Studio（C#のビルド用）
+- [dnSpy](https://github.com/dnSpyEx/dnSpy/releases) または [ILSpy](https://github.com/icsharpcode/ILSpy/releases)（逆コンパイル用）
 
-## セットアップ（Windows）
+## セットアップ手順
 
-### 1. STSのインストールパスを確認する
+### 1. BepInEx を導入する
 
-Steamの標準インストール先：
-```
-C:\Program Files (x86)\Steam\steamapps\common\SlayTheSpire
-```
+1. [BepInEx 5.x releases](https://github.com/BepInEx/BepInEx/releases) から `BepInEx_win_x64_5.x.x.x.zip` をダウンロード
+2. STS2のインストールフォルダに展開する
+   ```
+   C:\Program Files (x86)\Steam\steamapps\common\Slay the Spire 2\
+   ├── BepInEx\        ← ここに展開
+   ├── SlayTheSpire2.exe
+   └── ...
+   ```
+3. ゲームを一度起動して BepInEx の初期化を行い、終了する
+4. `BepInEx\LogOutput.log` にログが出力されていれば成功
 
-パスが異なる場合は `build.gradle` の以下の行を書き換えてください：
+### 2. セーブ処理のクラス名を調べる（重要）
 
-```groovy
-def defaultStsHome = 'C:/Program Files (x86)/Steam/steamapps/common/SlayTheSpire'
-```
+STS2の内部クラス名を確認する必要があります：
 
-> **注意:** Windowsのパスでもバックスラッシュ `\` ではなくスラッシュ `/` を使ってください。
-
-### 2. ModTheSpire と BaseMod を導入する
-
-1. [ModTheSpire](https://github.com/kiooeht/ModTheSpire/releases) の `ModTheSpire.jar` をダウンロード
-2. [BaseMod](https://github.com/daviscook477/BaseMod/releases) の `BaseMod.jar` をダウンロード
-3. 両方を `<STSフォルダ>\mods\` に置く（`mods` フォルダがなければ作成）
-
-または Steam Workshop で導入しても可。
+1. dnSpy を起動
+2. `<STS2フォルダ>\SlayTheSpire2_Data\Managed\Assembly-CSharp.dll` を開く
+3. 検索（Ctrl+F）で `save`, `quit`, `title`, `menu` などで検索
+4. セーブ処理・タイトル復帰処理のクラス名・メソッド名を特定する
+5. `Plugin.cs` の `SaveAndQuit.Execute()` 内の TODO 部分に記述する
 
 ### 3. ビルド＆インストール
 
-コマンドプロンプト or PowerShell で実行：
+環境変数を設定（またはcsprojのパスを直接書き換え）:
 
 ```powershell
-cd QuickRetryMod
-.\gradlew.bat deployMod
+$env:STS2_HOME = "C:\Program Files (x86)\Steam\steamapps\common\Slay the Spire 2"
 ```
 
-自動で `mods\QuickRetryMod-1.0.0.jar` にコピーされます。
+ビルド（自動的に BepInEx\plugins にコピーされます）：
 
-> `gradlew.bat` がない場合は先に `gradle wrapper` を実行するか、
-> `gradle jar` でビルドして生成された JAR を手動で `mods\` にコピーしてください。
+```powershell
+dotnet build
+```
 
 ## 使い方
 
-1. ModTheSpireでゲームを起動し、`BaseMod` と `Quick Retry Mod` を有効化
+1. BepInEx 導入済みの状態でゲームを起動
 2. ゲームプレイ中に **F5** を押す
-3. 自動保存されてタイトルへ戻る
-4. 「続ける」でそのフロアの最初（部屋選択画面）から再プレイ
+3. 保存されてタイトルへ戻る
+4. 「続ける」でそのフロアの最初から再プレイ
 
-## 注意
+## 開発の進め方
 
-- このModはゲームの既存のセーブ機能を利用しています
-- フロア途中のセーブデータをロードすると、STSの仕様によりそのフロアの最初（部屋選択前）から再開します
-- 戦闘結果（HP消費など）はセーブ時点の状態に戻ります
+現状は `Plugin.cs` の `SaveAndQuit.Execute()` が未実装です。
+dnSpyでクラス名を調べてから実装します。
+
+```
+Plugin.cs の TODO を埋める
+    ↓
+dotnet build でビルド
+    ↓
+BepInEx\LogOutput.log でログ確認
+    ↓
+動作確認
+```

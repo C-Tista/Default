@@ -1,0 +1,60 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net46</TargetFramework>
+    <AssemblyName>QuickRetryMod</AssemblyName>
+    <RootNamespace>QuickRetryMod</RootNamespace>
+    <Nullable>enable</Nullable>
+    <LangVersion>latest</LangVersion>
+  </PropertyGroup>
+
+  <!--
+    STS2_HOME: Slay the Spire 2 のインストールフォルダ
+    例: C:\Program Files (x86)\Steam\steamapps\common\Slay the Spire 2
+
+    環境変数 STS2_HOME を設定するか、以下のフォールバックパスを書き換えてください。
+  -->
+  <PropertyGroup>
+    <Sts2Home Condition="'$(STS2_HOME)' != ''">$(STS2_HOME)</Sts2Home>
+    <Sts2Home Condition="'$(STS2_HOME)' == ''">C:\Program Files (x86)\Steam\steamapps\common\Slay the Spire 2</Sts2Home>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- BepInEx 本体 -->
+    <Reference Include="BepInEx">
+      <HintPath>$(Sts2Home)\BepInEx\core\BepInEx.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+
+    <!-- Harmony（メソッドパッチ用） -->
+    <Reference Include="0Harmony">
+      <HintPath>$(Sts2Home)\BepInEx\core\0Harmony.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+
+    <!-- UnityEngine（入力・基本API） -->
+    <Reference Include="UnityEngine.CoreModule">
+      <HintPath>$(Sts2Home)\SlayTheSpire2_Data\Managed\UnityEngine.CoreModule.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+
+    <!--
+      ゲームの内部クラス（セーブ・タイトル処理など）
+      逆コンパイル後に確認したクラスを使うために必要
+    -->
+    <Reference Include="Assembly-CSharp">
+      <HintPath>$(Sts2Home)\SlayTheSpire2_Data\Managed\Assembly-CSharp.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+  </ItemGroup>
+
+  <!-- ビルド後に BepInEx の plugins フォルダへ自動コピー -->
+  <Target Name="DeployMod" AfterTargets="Build">
+    <Copy
+      SourceFiles="$(OutputPath)$(AssemblyName).dll"
+      DestinationFolder="$(Sts2Home)\BepInEx\plugins\QuickRetryMod"
+      SkipUnchangedFiles="true" />
+    <Message Text="Deployed to $(Sts2Home)\BepInEx\plugins\QuickRetryMod" Importance="high" />
+  </Target>
+
+</Project>
