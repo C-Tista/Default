@@ -8,39 +8,53 @@
 - Slay the Spire（Steam版）
 - [ModTheSpire](https://github.com/kiooeht/ModTheSpire/releases) 3.30.0以上
 - [BaseMod](https://github.com/daviscook477/BaseMod/releases)
+- Java 8 (JDK)
 
-## ビルド方法
+## セットアップ（Windows）
 
-### 1. 環境変数を設定
+### 1. STSのインストールパスを確認する
 
-```bash
-# Linux / Mac
-export STS_HOME="$HOME/.steam/steam/steamapps/common/SlayTheSpire"
-
-# Windows (PowerShell)
-$env:STS_HOME="C:\Program Files (x86)\Steam\steamapps\common\SlayTheSpire"
+Steamの標準インストール先：
+```
+C:\Program Files (x86)\Steam\steamapps\common\SlayTheSpire
 ```
 
-### 2. ビルド
+パスが異なる場合は `build.gradle` の以下の行を書き換えてください：
 
-```bash
-./gradlew jar
+```groovy
+def defaultStsHome = 'C:/Program Files (x86)/Steam/steamapps/common/SlayTheSpire'
 ```
 
-### 3. インストール（ビルド&コピー）
+> **注意:** Windowsのパスでもバックスラッシュ `\` ではなくスラッシュ `/` を使ってください。
 
-```bash
-./gradlew deployMod
+### 2. ModTheSpire と BaseMod を導入する
+
+1. [ModTheSpire](https://github.com/kiooeht/ModTheSpire/releases) の `ModTheSpire.jar` をダウンロード
+2. [BaseMod](https://github.com/daviscook477/BaseMod/releases) の `BaseMod.jar` をダウンロード
+3. 両方を `<STSフォルダ>\mods\` に置く（`mods` フォルダがなければ作成）
+
+または Steam Workshop で導入しても可。
+
+### 3. ビルド＆インストール
+
+コマンドプロンプト or PowerShell で実行：
+
+```powershell
+cd QuickRetryMod
+.\gradlew.bat deployMod
 ```
 
-生成された `QuickRetryMod-1.0.0.jar` を `<STS_HOME>/mods/` フォルダに置いてください。
+自動で `mods\QuickRetryMod-1.0.0.jar` にコピーされます。
+
+> `gradlew.bat` がない場合は先に `gradle wrapper` を実行するか、
+> `gradle jar` でビルドして生成された JAR を手動で `mods\` にコピーしてください。
 
 ## 使い方
 
 1. ModTheSpireでゲームを起動し、`BaseMod` と `Quick Retry Mod` を有効化
 2. ゲームプレイ中に **F5** を押す
-3. 保存されてタイトルへ戻る
-4. 「続ける」でそのフロアの最初から再プレイ
+3. 自動保存されてタイトルへ戻る
+4. 「続ける」でそのフロアの最初（部屋選択画面）から再プレイ
 
 ## 注意
 

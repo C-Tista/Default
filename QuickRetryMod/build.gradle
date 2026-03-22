@@ -5,13 +5,11 @@ plugins {
 group = 'quickretry'
 version = '1.0.0'
 
-// ゲームとMod依存ライブラリのパスを設定してください
-// Slay the Spireのインストールフォルダ（Steamの場合は下記が一般的）
-// Windows: C:/Program Files (x86)/Steam/steamapps/common/SlayTheSpire
-// Linux:   ~/.steam/steam/steamapps/common/SlayTheSpire
-// Mac:     ~/Library/Application Support/Steam/steamapps/common/SlayTheSpire
-def stsHome = System.getenv('STS_HOME') ?: '/path/to/SlayTheSpire'
-def mtsHome = System.getenv('MTS_HOME') ?: "${stsHome}/mods"
+// Slay the Spireのインストールフォルダ
+// 環境変数 STS_HOME を設定するか、以下のデフォルトパスを直接書き換えてください
+// 例: def stsHome = 'C:/Program Files (x86)/Steam/steamapps/common/SlayTheSpire'
+def defaultStsHome = 'C:/Program Files (x86)/Steam/steamapps/common/SlayTheSpire'
+def stsHome = System.getenv('STS_HOME') ?: defaultStsHome
 
 repositories {
     mavenCentral()
